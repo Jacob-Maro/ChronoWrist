@@ -48,11 +48,6 @@ class MainActivity : ComponentActivity() {
                        modifier = Modifier.padding(innerPadding)
                    )
 
-                   // AppNavigation(
-                       // navController = navController,
-                       // modifier = Modifier.padding(innerPadding)
-                   // )
-
                 }
             }
         }
