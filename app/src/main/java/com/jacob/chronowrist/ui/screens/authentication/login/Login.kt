@@ -2,7 +2,9 @@ package com.jacob.chronowrist.ui.screens.authentication.login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +28,6 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     loginViewModel: LoginViewModel = viewModel()
 ) {
-    // Navigate to Home screen on success
     LaunchedEffect(loginViewModel.isSuccess) {
         if (loginViewModel.isSuccess) {
             navController.navigate(ROUTES.Home.name) {
@@ -35,136 +36,118 @@ fun LoginScreen(
         }
     }
 
-    // Load the Lottie composition from raw resources
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.business_ideas)
-    )
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.business_ideas))
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .imePadding()
+            .padding(24.dp)
     ) {
-        // Use the simpler LottieAnimation signature which handles state and playback internally
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(250.dp)
-        )
-
-        Text(
-            text = "ChronoWrist",
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Text(
-            text = "Timekeeping, Elevated.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        OutlinedTextField(
-            value = loginViewModel.email,
-            onValueChange = { loginViewModel.onEmailChange(it) },
-            label = { Text("Email Address") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            shape = MaterialTheme.shapes.medium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = loginViewModel.password,
-            onValueChange = { loginViewModel.onPasswordChange(it) },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            shape = MaterialTheme.shapes.medium
-        )
-
-        Text(
-            text = "Forgot Password?",
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 8.dp)
-                .clickable { navController.navigate(ROUTES.ForgotPassword.name) },
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        // Show login error if any
-        loginViewModel.errorMessage?.let {
-            Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 8.dp)
+        // Scrollable area for top content
+        Column(
+            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(200.dp)
             )
+
+            Text(
+                text = "ChronoWrist",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Text(
+                text = "Timekeeping, Elevated.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                value = loginViewModel.email,
+                onValueChange = { loginViewModel.onEmailChange(it) },
+                label = { Text("Email Address") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = loginViewModel.password,
+                onValueChange = { loginViewModel.onPasswordChange(it) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Text(
+                text = "Forgot Password?",
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .padding(top = 8.dp)
+                    .clickable { navController.navigate(ROUTES.ForgotPassword.name) },
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            if (loginViewModel.errorMessage != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = loginViewModel.errorMessage!!,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
+        // Bottom area for actions (Login button is always visible or at the bottom of the list)
         Button(
             onClick = { loginViewModel.login() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
+            modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = MaterialTheme.shapes.medium,
             enabled = !loginViewModel.isLoading
         ) {
             if (loginViewModel.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    strokeWidth = 2.dp
-                )
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
             } else {
-                Text(
-                    text = "Login",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Text("Login", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "New to ChronoWrist? ",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            TextButton(
-                onClick = { navController.navigate(ROUTES.Register.name) },
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Sign Up",
-                    fontWeight = FontWeight.Bold
-                )
+            Text("New to ChronoWrist? ", style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = { navController.navigate(ROUTES.Register.name) }, contentPadding = PaddingValues(0.dp)) {
+                Text("Sign Up", fontWeight = FontWeight.Bold)
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LoginPreview() {
-    ChronoWristTheme {
-        LoginScreen(navController = rememberNavController())
     }
 }

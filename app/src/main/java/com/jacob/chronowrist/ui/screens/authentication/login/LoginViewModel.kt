@@ -29,15 +29,17 @@ class LoginViewModel : ViewModel() {
 
     fun onEmailChange(newEmail: String) {
         email = newEmail
+        errorMessage = null
     }
 
     fun onPasswordChange(newPassword: String) {
         password = newPassword
+        errorMessage = null
     }
 
     fun login() {
         if (email.isBlank() || password.isBlank()) {
-            errorMessage = "Please fill in all fields"
+            errorMessage = "Please enter both your email and password to continue."
             return
         }
 
@@ -49,10 +51,24 @@ class LoginViewModel : ViewModel() {
                 authRepository.loginUser(UserModel(email = email, password = password))
                 isSuccess = true
             } catch (e: Exception) {
-                errorMessage = e.message ?: "Login failed"
+                val msg = e.message ?: ""
+                errorMessage = when {
+                    msg.contains("Invalid login credentials", ignoreCase = true) || 
+                    msg.contains("unauthorized", ignoreCase = true) -> {
+                        "The credentials you entered are incorrect. Please try again or, if you don't have an account, feel free to create one below."
+                    }
+                    msg.contains("Email not confirmed", ignoreCase = true) -> {
+                        "Please check your inbox and confirm your email address before logging in."
+                    }
+                    else -> "We're having trouble signing you in. Please check your connection and try again."
+                }
             } finally {
                 isLoading = false
             }
         }
+    }
+    
+    fun clearError() {
+        errorMessage = null
     }
 }

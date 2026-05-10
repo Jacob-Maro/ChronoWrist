@@ -38,16 +38,31 @@ class RegisterViewModel : ViewModel() {
     val passwordMismatch: Boolean
         get() = confirmPassword.isNotEmpty() && password != confirmPassword
 
-    fun onFullNameChange(value: String) { fullName = value }
-    fun onEmailChange(value: String) { email = value }
-    fun onPasswordChange(value: String) { password = value }
-    fun onConfirmPasswordChange(value: String) { confirmPassword = value }
+    fun onFullNameChange(value: String) { 
+        fullName = value 
+        errorMessage = null
+    }
+    fun onEmailChange(value: String) { 
+        email = value 
+        errorMessage = null
+    }
+    fun onPasswordChange(value: String) { 
+        password = value 
+        errorMessage = null
+    }
+    fun onConfirmPasswordChange(value: String) { 
+        confirmPassword = value 
+        errorMessage = null
+    }
     fun clearError() { errorMessage = null }
 
     fun register() {
-        if (passwordMismatch) return
+        if (passwordMismatch) {
+            errorMessage = "Please make sure your passwords match."
+            return
+        }
         if (fullName.isBlank() || email.isBlank() || password.isBlank()) {
-            errorMessage = "Please fill in all fields"
+            errorMessage = "Please fill in all the details to create your ChronoWrist account."
             return
         }
 
@@ -64,7 +79,16 @@ class RegisterViewModel : ViewModel() {
                 authRepository.registerUser(user)
                 isSuccess = true
             } catch (e: Exception) {
-                errorMessage = e.message ?: "An unexpected error occurred"
+                val msg = e.message ?: ""
+                errorMessage = when {
+                    msg.contains("User already registered", ignoreCase = true) -> {
+                        "It looks like this email is already associated with an account. Would you like to log in instead?"
+                    }
+                    msg.contains("weak_password", ignoreCase = true) -> {
+                        "For your security, please choose a stronger password (at least 6 characters)."
+                    }
+                    else -> "We couldn't create your account right now. Please check your internet connection and try again."
+                }
             } finally {
                 isLoading = false
             }

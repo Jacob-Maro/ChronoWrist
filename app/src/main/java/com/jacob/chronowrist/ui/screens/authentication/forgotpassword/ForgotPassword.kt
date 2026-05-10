@@ -1,6 +1,8 @@
 package com.jacob.chronowrist.ui.screens.authentication.forgotpassword
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +25,9 @@ fun ForgotPasswordScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .imePadding() // Slide up when keyboard appears
+            .verticalScroll(rememberScrollState()) // Allow scrolling
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -50,22 +54,24 @@ fun ForgotPasswordScreen(
             onValueChange = { forgotPasswordViewModel.onEmailChange(it) },
             label = { Text("Email") },
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true
+            singleLine = true,
+            shape = MaterialTheme.shapes.medium
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = { forgotPasswordViewModel.resetPassword() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.medium
         ) {
-            Text("Send Reset Link")
+            Text("Send Reset Link", fontWeight = FontWeight.Bold)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = { navController.popBackStack() }) {
-            Text("Back to Login")
+            Text("Back to Login", fontWeight = FontWeight.Bold)
         }
     }
 }

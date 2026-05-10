@@ -1,5 +1,6 @@
 package com.jacob.chronowrist.ui.screens.home.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -185,7 +189,7 @@ private fun WatchImageBox(watch: Watch, size: androidx.compose.ui.unit.Dp, featu
     ) {
         // Replace this placeholder with an actual Image composable once you have drawables
         // e.g. Image(painter = painterResource(watch.imageRes!!), contentDescription = watch.name)
-        Box(
+       /* Box(
             modifier = Modifier
                 .size(80.dp)
                 .clip(CircleShape)
@@ -199,6 +203,16 @@ private fun WatchImageBox(watch: Watch, size: androidx.compose.ui.unit.Dp, featu
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
+        }*/
+        if (watch.imageRes != null) {
+            Image(
+                painter = painterResource(id = watch.imageRes),
+                contentDescription = watch.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            // initials fallback circle
         }
 
         watch.badge?.let {

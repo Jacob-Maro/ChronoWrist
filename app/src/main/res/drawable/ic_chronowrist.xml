@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Background circle - deep navy blue -->
+    <path
+        android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0"
+        android:fillColor="#0D1B3E"/>
+
+    <!-- Outer bezel ring - gold -->
+    <path
+        android:pathData="M54,54m-46,0a46,46 0,1 1,92 0a46,46 0,1 1,-92 0"
+        android:fillColor="#00000000"
+        android:strokeColor="#C9A84C"
+        android:strokeWidth="1.5"/>
+
+    <!-- Dial face - slightly lighter -->
+    <path
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0"
+        android:fillColor="#162454"/>
+
+    <!-- Inner dial ring - subtle gold -->
+    <path
+        android:pathData="M54,54m-39,0a39,39 0,1 1,78 0a39,39 0,1 1,-78 0"
+        android:fillColor="#00000000"
+        android:strokeColor="#C9A84C"
+        android:strokeWidth="0.4"
+        android:strokeAlpha="0.4"/>
+
+    <!-- Hour markers - 12 positions, gold rectangles rotated around center -->
+    <!-- 12 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,23 L52.5,23 Z"
+        android:fillColor="#C9A84C"/>
+    <!-- 1 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="30"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 2 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="60"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 3 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,23 L52.5,23 Z"
+        android:fillColor="#C9A84C"
+        android:rotation="90"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 4 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="120"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 5 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="150"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 6 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,23 L52.5,23 Z"
+        android:fillColor="#C9A84C"
+        android:rotation="180"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 7 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="210"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 8 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="240"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 9 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,23 L52.5,23 Z"
+        android:fillColor="#C9A84C"
+        android:rotation="270"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 10 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="300"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- 11 o'clock -->
+    <path
+        android:pathData="M52.5,16 L55.5,16 L55.5,21 L52.5,21 Z"
+        android:fillColor="#C9A84C"
+        android:fillAlpha="0.5"
+        android:rotation="330"
+        android:pivotX="54"
+        android:pivotY="54"/>
+
+    <!-- Hour hand (10:10 position - pointing to ~300 degrees) -->
+    <!-- Broad tapered hour hand -->
+    <path
+        android:pathData="M53,54 L51.5,32 L54,29 L56.5,32 L55,54 Z"
+        android:fillColor="#F0EAD6"
+        android:rotation="300"
+        android:pivotX="54"
+        android:pivotY="54"/>
+
+    <!-- Minute hand (10 min = 60 degrees) -->
+    <!-- Slim long minute hand -->
+    <path
+        android:pathData="M53.2,54 L52.2,25 L54,22 L55.8,25 L54.8,54 Z"
+        android:fillColor="#F0EAD6"
+        android:rotation="60"
+        android:pivotX="54"
+        android:pivotY="54"/>
+
+    <!-- Seconds hand - thin, gold with counterweight -->
+    <path
+        android:pathData="M53.7,54 L53.7,27 L54.3,27 L54.3,54 Z"
+        android:fillColor="#C9A84C"
+        android:rotation="190"
+        android:pivotX="54"
+        android:pivotY="54"/>
+    <!-- Counterweight -->
+    <path
+        android:pathData="M53.7,54 L53.7,62 L54.3,62 L54.3,54 Z"
+        android:fillColor="#C9A84C"
+        android:rotation="190"
+        android:pivotX="54"
+        android:pivotY="54"/>
+
+    <!-- Center cap - gold -->
+    <path
+        android:pathData="M54,54m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+        android:fillColor="#C9A84C"/>
+
+    <!-- Center dot - dark -->
+    <path
+        android:pathData="M54,54m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0"
+        android:fillColor="#0D1B3E"/>
+
+    <!-- Crown on the right side -->
+    <path
+        android:pathData="M94,48 L98,48 Q100,48 100,50 L100,58 Q100,60 98,60 L94,60 Z"
+        android:fillColor="#C9A84C"/>
+    <path
+        android:pathData="M94,50 L97,50 L97,58 L94,58 Z"
+        android:fillColor="#B8943A"/>
+
+</vector>

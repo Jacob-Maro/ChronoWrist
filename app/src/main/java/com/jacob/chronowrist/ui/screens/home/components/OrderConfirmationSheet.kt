@@ -1,20 +1,9 @@
 package com.jacob.chronowrist.ui.screens.home.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +17,8 @@ import androidx.compose.ui.unit.dp
 fun OrderConfirmationSheet(
     orderId: String,
     total: Double,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onTrackOrder: (String) -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -72,7 +62,9 @@ fun OrderConfirmationSheet(
             }
             Spacer(Modifier.height(10.dp))
             OutlinedButton(
-                onClick = onDismiss,
+                onClick = { 
+                    onTrackOrder(orderId)
+                },
                 modifier = Modifier.fillMaxWidth().height(52.dp),
                 shape = MaterialTheme.shapes.medium
             ) {

@@ -1,25 +1,10 @@
 package com.jacob.chronowrist.ui.screens.authentication.register
 
-import com.jacob.chronowrist.R
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,6 +22,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.jacob.chronowrist.R
 import com.jacob.chronowrist.ui.navigation.ROUTES
 import com.jacob.chronowrist.ui.theme.ChronoWristTheme
 
@@ -46,16 +32,15 @@ fun RegisterScreen(
     modifier: Modifier = Modifier,
     registerViewModel: RegisterViewModel = viewModel()
 ) {
-    // Navigate to Home screen on success
+    // Navigate to Login screen on success so user can login manually
     LaunchedEffect(registerViewModel.isSuccess) {
         if (registerViewModel.isSuccess) {
-            navController.navigate(ROUTES.Home.name) {
+            navController.navigate(ROUTES.Login.name) {
                 popUpTo(ROUTES.Register.name) { inclusive = true }
             }
         }
     }
 
-    // Load the Lottie composition — reusing the same animation as LoginScreen
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.business_ideas)
     )
@@ -63,113 +48,119 @@ fun RegisterScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+            .imePadding() // Pushes content up when keyboard appears
+            .padding(24.dp)
     ) {
-        // Lottie animation
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
+        // Scrollable area for fields
+        Column(
             modifier = Modifier
-                .size(200.dp)
-                .padding(bottom = 16.dp),
-            restartOnPlay = true
-        )
-
-        Text(
-            text = "ChronoWrist",
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Text(
-            text = "Create your account",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Full Name
-        OutlinedTextField(
-            value = registerViewModel.fullName,
-            onValueChange = { registerViewModel.onFullNameChange(it) },
-            label = { Text("Full Name") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            shape = MaterialTheme.shapes.medium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Email
-        OutlinedTextField(
-            value = registerViewModel.email,
-            onValueChange = { registerViewModel.onEmailChange(it) },
-            label = { Text("Email Address") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            shape = MaterialTheme.shapes.medium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Password
-        OutlinedTextField(
-            value = registerViewModel.password,
-            onValueChange = { registerViewModel.onPasswordChange(it) },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            shape = MaterialTheme.shapes.medium
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Confirm Password
-        OutlinedTextField(
-            value = registerViewModel.confirmPassword,
-            onValueChange = { registerViewModel.onConfirmPasswordChange(it) },
-            label = { Text("Confirm Password") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            shape = MaterialTheme.shapes.medium,
-            isError = registerViewModel.passwordMismatch
-        )
-
-        if (registerViewModel.passwordMismatch) {
-            Text(
-                text = "Passwords do not match",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
                 modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(top = 4.dp)
+                    .size(150.dp)
+                    .padding(bottom = 16.dp),
+                restartOnPlay = true
             )
-        }
 
-        // Show Supabase error if any
-        registerViewModel.errorMessage?.let {
             Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(top = 8.dp)
+                text = "Join ChronoWrist",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
+
+            Text(
+                text = "Enter your details to create an account",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            OutlinedTextField(
+                value = registerViewModel.fullName,
+                onValueChange = { registerViewModel.onFullNameChange(it) },
+                label = { Text("Full Name") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = registerViewModel.email,
+                onValueChange = { registerViewModel.onEmailChange(it) },
+                label = { Text("Email Address") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = registerViewModel.password,
+                onValueChange = { registerViewModel.onPasswordChange(it) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                shape = MaterialTheme.shapes.medium
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedTextField(
+                value = registerViewModel.confirmPassword,
+                onValueChange = { registerViewModel.onConfirmPasswordChange(it) },
+                label = { Text("Confirm Password") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                shape = MaterialTheme.shapes.medium,
+                isError = registerViewModel.passwordMismatch
+            )
+
+            if (registerViewModel.passwordMismatch) {
+                Text(
+                    text = "Passwords do not match",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.labelSmall,
+                    modifier = Modifier.align(Alignment.Start).padding(top = 4.dp)
+                )
+            }
+
+            // Polite error message box
+            if (registerViewModel.errorMessage != null) {
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = registerViewModel.errorMessage!!,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Register button
+        // Action Buttons at the bottom
         Button(
             onClick = { registerViewModel.register() },
             modifier = Modifier
@@ -185,33 +176,20 @@ fun RegisterScreen(
                     strokeWidth = 2.dp
                 )
             } else {
-                Text(
-                    text = "Create Account",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
+                Text("Create Account", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        // Back to login
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
-                text = "Already have an account? ",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            TextButton(
-                onClick = { navController.navigate(ROUTES.Login.name) },
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Log In",
-                    fontWeight = FontWeight.Bold
-                )
+            Text("Already have an account? ", style = MaterialTheme.typography.bodyMedium)
+            TextButton(onClick = { navController.navigate(ROUTES.Login.name) }, contentPadding = PaddingValues(0.dp)) {
+                Text("Log In", fontWeight = FontWeight.Bold)
             }
         }
     }

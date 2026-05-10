@@ -2,14 +2,7 @@ package com.jacob.chronowrist.ui.screens.home.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,20 +11,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.PhoneAndroid
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,7 +25,7 @@ import kotlin.math.roundToInt
 
 enum class PaymentMethod(val label: String, val sub: String, val icon: ImageVector) {
     CARD("Credit / Debit Card", "Visa, Mastercard, Amex", Icons.Outlined.CreditCard),
-    MOBILE("Mobile Pay", "Apple Pay, Google Pay", Icons.Outlined.PhoneAndroid),
+    MPESA("M-Pesa", "Pay using Safaricom M-Pesa", Icons.Outlined.PhoneAndroid),
     PAYPAL("PayPal", "Pay via PayPal account", Icons.Outlined.AccountBalance)
 }
 
@@ -58,9 +39,9 @@ fun CheckoutSheet(
     var selectedMethod by remember { mutableStateOf(PaymentMethod.CARD) }
     var cardholderName by remember { mutableStateOf("") }
     var cardNumber by remember { mutableStateOf("") }
-    var expiry by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
+    var mpesaNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var errorMsg by remember { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -93,203 +74,104 @@ fun CheckoutSheet(
                     PaymentMethodTile(
                         method = method,
                         selected = selectedMethod == method,
-                        onClick = { selectedMethod = method }
+                        onClick = { selectedMethod = method; errorMsg = null }
                     )
                 }
             }
 
             Spacer(Modifier.height(20.dp))
 
-            // Card fields — only shown for CARD method
             if (selectedMethod == PaymentMethod.CARD) {
-                Text(
-                    text = "Card Details",
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
-                OutlinedTextField(
-                    value = cardholderName,
-                    onValueChange = { cardholderName = it },
-                    label = { Text("Cardholder Name") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.medium
-                )
-                Spacer(Modifier.height(10.dp))
+                Text("Card Details", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                 OutlinedTextField(
                     value = cardNumber,
-                    onValueChange = { raw ->
-                        val digits = raw.filter { it.isDigit() }.take(16)
-                        cardNumber = digits.chunked(4).joinToString(" ")
-                    },
+                    onValueChange = { cardNumber = it },
                     label = { Text("Card Number") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    shape = MaterialTheme.shapes.medium,
-                    placeholder = { Text("1234 5678 9012 3456") }
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
-                Spacer(Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedTextField(
-                        value = expiry,
-                        onValueChange = { raw ->
-                            val digits = raw.filter { it.isDigit() }.take(4)
-                            expiry = if (digits.length >= 3) "${digits.take(2)} / ${digits.drop(2)}" else digits
-                        },
-                        label = { Text("Expiry") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        placeholder = { Text("MM / YY") },
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    OutlinedTextField(
-                        value = cvv,
-                        onValueChange = { if (it.length <= 4) cvv = it },
-                        label = { Text("CVV") },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        shape = MaterialTheme.shapes.medium
-                    )
-                }
-                Spacer(Modifier.height(10.dp))
+            } else if (selectedMethod == PaymentMethod.MPESA) {
+                Text("M-Pesa Details", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                OutlinedTextField(
+                    value = mpesaNumber,
+                    onValueChange = { mpesaNumber = it },
+                    label = { Text("M-Pesa Phone Number") },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("0712345678") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
+                )
             }
 
-            // Shipping address
-            Text(
-                text = "Shipping Address",
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
+            Spacer(Modifier.height(20.dp))
+
+            Text("Shipping Address", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             OutlinedTextField(
                 value = address,
                 onValueChange = { address = it },
                 label = { Text("Full Address") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                placeholder = { Text("123 Main St, City, Country") },
-                shape = MaterialTheme.shapes.medium
+                modifier = Modifier.fillMaxWidth()
             )
 
+            errorMsg?.let {
+                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+            }
+
             Spacer(Modifier.height(20.dp))
-
-            // Order summary
             OrderSummaryCard(cartViewModel)
-
             Spacer(Modifier.height(20.dp))
 
             Button(
                 onClick = {
-                    val orderId = "CW${(10000..99999).random()}"
-                    onOrderPlaced(orderId, cartViewModel.total)
+                    if (address.isBlank()) {
+                        errorMsg = "Please enter an address"
+                    } else if (selectedMethod == PaymentMethod.CARD && cardNumber.length < 16) {
+                        errorMsg = "Invalid Card Number"
+                    } else if (selectedMethod == PaymentMethod.MPESA && mpesaNumber.length < 10) {
+                        errorMsg = "Invalid M-Pesa Number"
+                    } else {
+                        val orderId = "CW${(10000..99999).random()}"
+                        onOrderPlaced(orderId, cartViewModel.total)
+                    }
                 },
                 modifier = Modifier.fillMaxWidth().height(54.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text(
-                    text = "Place Order  —  ${"$"}${"%,.0f".format(cartViewModel.total)}",
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Text("Confirm & Pay ${"$"}${"%,.0f".format(cartViewModel.total)}", fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
 @Composable
-private fun PaymentMethodTile(
-    method: PaymentMethod,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    val borderColor = if (selected) MaterialTheme.colorScheme.primary
-    else MaterialTheme.colorScheme.outlineVariant
-    val borderWidth = if (selected) 1.5.dp else 0.5.dp
-    val bgColor = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.06f)
-    else MaterialTheme.colorScheme.surface
-
+private fun PaymentMethodTile(method: PaymentMethod, selected: Boolean, onClick: () -> Unit) {
+    val borderColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(borderWidth, borderColor, MaterialTheme.shapes.medium)
-            .clickable { onClick() },
-        color = bgColor,
+        modifier = Modifier.fillMaxWidth().border(1.dp, borderColor, MaterialTheme.shapes.medium).clickable { onClick() },
+        color = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.medium
     ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                imageVector = method.icon,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(22.dp)
-            )
-            Column(modifier = Modifier.weight(1f)) {
+        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Icon(method.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+            Column(Modifier.weight(1f)) {
                 Text(method.label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 Text(method.sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            if (selected) {
-                Icon(Icons.Default.CheckCircle, contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-            }
+            if (selected) Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         }
     }
 }
 
 @Composable
 private fun OrderSummaryCard(cartViewModel: CartViewModel) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = MaterialTheme.shapes.medium
-    ) {
+    Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium) {
         Column(modifier = Modifier.padding(14.dp)) {
-            Text("Order Summary", style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(bottom = 10.dp))
+            Text("Order Summary", fontWeight = FontWeight.SemiBold)
             cartViewModel.cartItems.forEach { item ->
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("${item.watch.name} ×${item.quantity}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f))
-                    Text("${"$"}${"%,.0f".format(item.watch.price * item.quantity)}",
-                        style = MaterialTheme.typography.bodySmall)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("${item.watch.name} x${item.quantity}", style = MaterialTheme.typography.bodySmall)
+                    Text("${"$"}${item.watch.price * item.quantity}", style = MaterialTheme.typography.bodySmall)
                 }
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            SummaryRow("Shipping", if (cartViewModel.shipping == 0.0) "Free" else "$15")
-            SummaryRow("Tax (8%)", "${"$"}${(cartViewModel.tax).roundToInt()}")
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Total", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                Text("${"$"}${"%,.0f".format(cartViewModel.total)}",
-                    style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary)
-            }
         }
-    }
-}
-
-@Composable
-private fun SummaryRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodySmall)
     }
 }

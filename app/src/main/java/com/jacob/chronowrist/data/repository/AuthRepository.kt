@@ -12,8 +12,6 @@ import kotlinx.serialization.json.put
 
 class AuthRepository : AuthService {
     private val supabase = createSupabaseClient(
-        // The Supabase Kotlin SDK expects the Project URL (base URL)
-        // It automatically handles the /rest/v1 and /auth/v1 paths internally.
         supabaseUrl = "https://iklozyanrrjtnozykvnm.supabase.co",
         supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlrbG96eWFucnJqdG5venlrdm5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNzg3NDksImV4cCI6MjA5Mzc1NDc0OX0.edxM4qRuxU7wjmeFGfG85YWMu5FaJMQyyiJGxGiSpVc"
     ) {
@@ -22,9 +20,8 @@ class AuthRepository : AuthService {
     }
 
     override suspend fun registerUser(user: UserModel) {
-        // 1. Sign up the user in Supabase Auth
-        // We pass the full_name in the metadata to ensure it's available for database operations
-        val authUser = supabase.auth.signUpWith(Email) {
+        // 1. Sign up the user with Supabase Auth
+        val authResult = supabase.auth.signUpWith(Email) {
             email = user.email
             password = user.password
             data = buildJsonObject {
@@ -32,16 +29,17 @@ class AuthRepository : AuthService {
             }
         }
 
-        // 2. Manually insert the user profile into the 'profiles' table
-        val userId = authUser?.id
+        // 2. Save/Update profile in 'profiles' table using upsert to avoid duplicate key errors
+        val userId = authResult?.id
         if (userId != null) {
-            // We create a map to ensure we only send existing columns and use snake_case
-            val profile = mapOf(
+            val profileData = mapOf(
                 "id" to userId,
                 "full_name" to user.fullName,
-                "email" to user.email
+                "email" to user.email,
+                "balance" to 1000.0 // Default starting balance
             )
-            supabase.postgrest["profiles"].insert(profile)
+            // upsert prevents duplicate key errors by updating if exists
+            supabase.postgrest["profiles"].upsert(profileData)
         }
     }
 
@@ -56,11 +54,24 @@ class AuthRepository : AuthService {
         supabase.auth.resetPasswordForEmail(email = email)
     }
 
-    override suspend fun getUserProfile(user: UserModel) {
-        // Implementation for fetching profile details
+    override suspend fun getUserProfile(): UserModel? {
+        val userId = getCurrentUserId() ?: return null
+        return try {
+            supabase.postgrest["profiles"].select {
+                filter {
+                    eq("id", userId)
+                }
+            }.decodeSingle<UserModel>()
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override suspend fun logoutUser() {
         supabase.auth.signOut()
+    }
+
+    override fun getCurrentUserId(): String? {
+        return supabase.auth.currentUserOrNull()?.id
     }
 }

@@ -9,5 +9,6 @@ data class UserModel(
     @SerialName("full_name")
     val fullName: String = "",
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    val balance: Double = 0.0
 )
